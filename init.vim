@@ -21,9 +21,28 @@ Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend upda
 
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 
+" vim-lexical
+Plug 'reedes/vim-lexical'
+
 call plug#end()
 
+set nocompatible
+filetype plugin on
+
+augroup lexical
+  autocmd!
+  autocmd FileType markdown,mkd call lexical#init()
+  autocmd FileType textile call lexical#init()
+  autocmd FileType text call lexical#init({ 'spell': 0 })
+augroup END
+
+let g:lexical#spell = 1
+let g:lexical#spelllang = ['ru',]
+
 set completeopt=menu,menuone,noselect
+
+set spelllang=ru,en_us
+set spell
 
 lua <<EOF
   -- Setup nvim-cmp.
