@@ -75,3 +75,9 @@ lspconfig["gopls"].setup({
 	capabilities = capabilities,
 	on_attach = on_attach,
 })
+
+-- configure rust-analyzer server
+lspconfig["rust_analyzer"].setup({
+	capabilities = capabilities,
+	on_attach = on_attach,
+})
