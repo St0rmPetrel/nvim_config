@@ -22,7 +22,7 @@ local function create_command(query, host, tmp_file)
 		env = "clickhouse client --user " .. user .. " --password " .. password .. " --host "
 	end
 
-	return string.format("%s %s -q %s > %s", env, host, vim.fn.shellescape(query), tmp_file)
+	return string.format("%s %s -q %s > %s 2>&1", env, host, vim.fn.shellescape(query), tmp_file)
 end
 
 local function execClickSQL(host)
@@ -42,17 +42,41 @@ local function execClickSQL(host)
 		return
 	end
 
-	vim.cmd("split " .. tmpfile)
+	local file = io.open(tmpfile, "r")
+	if file == nil then
+		print("Error: Fail to open tmpfile")
+		return
+	end
 
+	local result = file:read("*all")
+	file:close()
 	os.remove(tmpfile)
+
+	return result
 end
 
 function ExecClickSQL()
+	local split_status, Split = pcall(require, "nui.split")
+	if not split_status then
+		print("nui.split plugin not found")
+		return
+	end
+	local event_status, Autocmd = pcall(require, "nui.utils.autocmd")
+	if not event_status then
+		print("nui.utils.autocmd plugin not found")
+		return
+	end
 	local menu_status, Menu = pcall(require, "nui.menu")
 	if not menu_status then
 		print("nui.menu plugin not found")
 		return
 	end
+
+	local split = Split({
+		relative = "editor",
+		position = "bottom",
+		size = "40%",
+	})
 
 	local menu = Menu({
 		position = "50%",
@@ -87,6 +111,18 @@ function ExecClickSQL()
 			Menu.item("prodch-sc-analytics-1-z503.h.o3.ru"),
 			Menu.item("prodch-sc-analytics-2-z503.h.o3.ru"),
 			Menu.item("prodch-sc-analytics-3-z503.h.o3.ru"),
+
+			Menu.item("prodch-scenter-analytics-1-z501.h.o3.ru"),
+			Menu.item("prodch-scenter-analytics-2-z501.h.o3.ru"),
+			Menu.item("prodch-scenter-analytics-3-z501.h.o3.ru"),
+
+			Menu.item("prodch-scenter-analytics-1-z502.h.o3.ru"),
+			Menu.item("prodch-scenter-analytics-2-z502.h.o3.ru"),
+			Menu.item("prodch-scenter-analytics-3-z502.h.o3.ru"),
+
+			Menu.item("prodch-scenter-analytics-1-z503.h.o3.ru"),
+			Menu.item("prodch-scenter-analytics-2-z503.h.o3.ru"),
+			Menu.item("prodch-scenter-analytics-3-z503.h.o3.ru"),
 		},
 		max_width = 20,
 		keymap = {
@@ -99,7 +135,13 @@ function ExecClickSQL()
 			print("Menu Closed!")
 		end,
 		on_submit = function(item)
-			execClickSQL(item.text)
+			split:mount()
+			split:on(Autocmd.event.BufLeave, function()
+				split:unmount()
+			end)
+
+			local result = execClickSQL(item.text)
+			vim.api.nvim_buf_set_lines(split.bufnr, 0, -1, true, vim.split(result, "\n"))
 		end,
 	})
 
