@@ -27,3 +27,5 @@ opt.cursorline = true -- highlight the current cursor line
 opt.clipboard:append("unnamedplus") -- use system clipboard as default register
 
 opt.iskeyword:append("-") -- consider string-string as whole word
+
+vim.o.updatetime = 250
