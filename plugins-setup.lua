@@ -67,6 +67,16 @@ return require("packer").startup(function(use)
 
 	use("MunifTanjim/nui.nvim")
 
+	-- golang
+	use({
+		"crusj/hierarchy-tree-go.nvim",
+		requires = "neovim/nvim-lspconfig",
+	})
+	use({
+		"crusj/structrue-go.nvim",
+		branch = "main",
+	})
+
 	-- Automatically set up your configuration after cloning packer.nvim
 	-- Put this at the end after all plugins
 	if packer_bootstrap then
