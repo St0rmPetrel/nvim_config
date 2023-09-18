@@ -14,7 +14,9 @@ local packer_bootstrap = ensure_packer()
 return require("packer").startup(function(use)
 	use("wbthomason/packer.nvim")
 
+	-- colorscheme
 	use({ "ellisonleao/gruvbox.nvim" })
+	use("rebelot/kanagawa.nvim")
 
 	-- windows
 	use("christoomey/vim-tmux-navigator")
